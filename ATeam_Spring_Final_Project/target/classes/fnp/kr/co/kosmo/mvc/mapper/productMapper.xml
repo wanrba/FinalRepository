@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="product">
+
+	<select id = "getTotalCount" resultType="int">
+		SELECT COUNT(*)
+		FROM PRODUCT 
+	</select>
+
+	<select id="getCategoryList" resultType = "categoryDto">
+		SELECT CATEGORY_NAME
+		FROM CATEGORY
+	</select>
+
+	<select id="getProductList" parameterType="hashmap" resultType="productDto">
+		SELECT R_NUM, PRO_INDEX, PRO_NAME, PRO_CATEGORY, PRO_BEFOREPRICE, PRO_AFTERPRICE, PRO_DISCOUNT, PRO_OFFDAY, PRO_IMG, PRO_RATING, PRO_RDATE
+		FROM (SELECT ROWNUM R_NUM, PRO_INDEX, PRO_NAME, PRO_CATEGORY, PRO_BEFOREPRICE, PRO_AFTERPRICE, PRO_DISCOUNT, PRO_OFFDAY, PRO_IMG, PRO_RATING, REPLACE(('20' || PRO_RDATE), '/', '-') AS PRO_RDATE
+			  FROM PRODUCT)
+		WHERE 1 = 1
+		<if test="category_name != null">
+			AND PRO_CATEGORY = #{category_name}
+		</if>
+		<if test="searchKeyword != null">
+			AND LOWER(PRO_NAME) LIKE '%' || #{searchKeyword} || '%'
+		</if>
+		<if test="paging != null">
+			AND R_NUM BETWEEN #{paging.start} AND #{paging.end}
+		</if>
+	</select>
+	
+	<select id="getProductDetail" parameterType="int" resultType="productDto">
+		SELECT PRO_INDEX, PRO_NAME, PRO_CATEGORY, PRO_BEFOREPRICE, PRO_AFTERPRICE, PRO_DISCOUNT, PRO_OFFDAY, PRO_DISCRIPTION, PRO_IMG, PRO_RATING, PRO_RDATE
+		FROM PRODUCT
+		WHERE PRO_INDEX = #{pro_index}
+	</select>
+</mapper>

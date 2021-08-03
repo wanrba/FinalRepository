@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="member">
+
+ 	<select id="chkIdPwd" parameterType="memberDto" resultType="int">
+ 		SELECT COUNT(*)
+ 		FROM MEMBER
+ 		WHERE USER_ID = #{user_id}
+ 		<if test="#{user_pwd} != null">
+ 			AND USER_PWD = #{user_pwd}
+ 		</if>
+ 	</select>
+ 	
+ 	<select id="getUserInfo" parameterType="memberDto" resultType="memberDto">
+ 		SELECT USER_NUM, USER_ID, USER_NAME, USER_PHONE, USER_GENDER, USER_COUPLENUM, USER_DDAY, USER_MATCH, ('20' || REPLACE(USER_ADATE, '/', '-')) AS USER_ADATE 
+ 		FROM MEMBER
+ 		WHERE USER_ID = #{user_id}
+ 	</select>
+ 	
+ 	<insert id="register" parameterType="memberDto">
+ 		INSERT INTO MEMBER(USER_NUM, USER_ID, USER_PWD, USER_NAME, USER_PHONE, USER_BIRTH, USER_AGE, USER_GENDER)
+ 		VALUES(MEMBER_SEQ.NEXTVAL, #{user_id}, #{user_pwd}, #{user_name}, #{user_phone}, #{user_birth}, (SELECT ROUND(MONTHS_BETWEEN(TRUNC(SYSDATE, 'YEAR'), TRUNC(TO_DATE(#{user_birth}))) /12 + 1) FROM DUAL), #{user_gender})
+ 	</insert>
+ 	
+ 	<update id="updateCoupleInfo" parameterType="hashmap">
+ 		UPDATE MEMBER 
+ 		SET USER_DDAY = SYSDATE, USER_COUPLENUM = (SELECT COUPLE_NUM
+ 												   FROM COUPLE
+ 												   WHERE COUPLE_MAN_ID = #{user_from_id}
+ 												   AND COUPLE_WOMAN_ID = #{user_to_id})
+ 		WHERE USER_ID IN (#{user_from_id}, #{user_to_id})
+ 	</update>
+
+</mapper>

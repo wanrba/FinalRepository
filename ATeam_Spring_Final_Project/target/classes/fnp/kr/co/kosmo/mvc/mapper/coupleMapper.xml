@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="couple">
+
+	<select id="chkApplicationCouple" parameterType="int" resultType="hashmap">
+		SELECT AC.USER_FROM_INDEX, AC.AC_TITLE, AC.AC_CONTENT, M.USER_ID
+		FROM APPLICATION_COUPLE AC, MEMBER M
+		WHERE AC.USER_FROM_INDEX = M.USER_NUM
+		AND AC.USER_TO_INDEX = #{user_index}
+	</select>
+
+	<select id="getPartnerInfo" parameterType="int" resultType="memberDto">
+		SELECT USER_NAME, USER_PHONE, USER_BIRTH, USER_AGE, USER_GENDER, USER_COUPLENUM, USER_DDAY, USER_MATCH, USER_TENDENCY
+		FROM MEMBER
+		WHERE USER_COUPLENUM = #{user_couplenum}
+	</select>
+	
+	<insert id="sendApplicationCouple" parameterType="hashmap">
+		INSERT INTO APPLICATION_COUPLE
+		VALUES(#{user_from_index}, (SELECT USER_NUM FROM MEMBER WHERE USER_ID = #{user_to_index}), #{ac_title}, #{ac_content})
+	</insert>
+	
+	<delete id="rejectApplicationCouple" parameterType="hashmap">
+		DELETE FROM APPLICATION_COUPLE
+		WHERE USER_TO_INDEX = #{user_index}
+	</delete>
+	
+	<insert id="acceptCouple" parameterType="hashmap">
+		INSERT INTO COUPLE
+		VALUES(COUPLE_SEQ.NEXTVAL, #{user_from_id}, #{user_to_id}, 100)
+	</insert>
+
+</mapper>

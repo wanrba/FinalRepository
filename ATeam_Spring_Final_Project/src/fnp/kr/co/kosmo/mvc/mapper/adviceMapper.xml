@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="advice">
+
+	<resultMap id="getAdviceListResult" type="hashmap">
+		<result property="advice_index" column="ADVICE_INDEX" />
+		<result property="advice_title" column = "ADVICE_TITLE" />
+		<result property="advice_start_day" column="ADVICE_START_DAY" />
+		<result property="advice_start_month" column="ADVICE_START_MONTH" />
+		<result property="advice_start_year" column="ADVICE_START_YEAR" />
+		<result property="advice_img" column="ADVICE_IMG" />
+		<result property="advice_content" column="ADVICE_CONTENT" jdbcType="CLOB" javaType="java.lang.String" />
+	</resultMap>
+
+ 	<select id="getAdviceList" parameterType="hashmap" resultMap="getAdviceListResult">
+ 		SELECT ADVICE_INDEX, ADVICE_START_DAY, ADVICE_START_MONTH, ADVICE_START_YEAR, ADVICE_TITLE, ADVICE_IMG, ADVICE_CONTENT
+ 		FROM ADVICE
+ 		WHERE 1 = 1
+		<if test="advice_start_day != null and advice_start_month != null">
+			AND ADVICE_START_DAY = 1 AND ADVICE_START_MONTH = 1
+		</if>
+		<if test="advice_start_month != null and advice_start_year != null">
+			AND ADVICE_START_MONTH = 1 AND ADVICE_START_YEAR = 1
+		</if>
+		<if test="advice_start_year != null">
+			AND ADVICE_START_YEAR = 1
+		</if>
+ 	</select>
+
+</mapper>
